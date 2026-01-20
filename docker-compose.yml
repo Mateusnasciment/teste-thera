@@ -23,16 +23,17 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/thera_db
-      NODE_ENV: development
+      NODE_ENV: production
+      PORT: 3000
     ports:
-      - "3001:3001"
+      - "3001:3000"
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
       - ./backend:/app
       - /app/node_modules
-    command: npm run start:dev
+
 
   frontend:
     build:
