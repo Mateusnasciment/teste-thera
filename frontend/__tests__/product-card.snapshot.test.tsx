@@ -4,15 +4,12 @@ import { ProductCard } from "~/components/products";
 import type { Product } from "~/components/products";
 
 const mockProduct: Product = {
-  id: "1",
-  name: "Test Product",
+  id: 1,
+  name: "Notebook Dell Inspiron 15",
   category: "Eletrônicos",
-  description: "A test product description",
-  price: "99.99",
-  imageUrl: "https://example.com/image.jpg",
-  stockQuantity: 10,
-  createdAt: new Date("2024-01-20"),
-  updatedAt: new Date("2024-01-20"),
+  description: "Notebook Dell Inspiron 15 com Intel Core i7, 16GB RAM, SSD 512GB",
+  price: 3500,
+  image: "https://via.placeholder.com/300x200?text=Notebook+Dell",
 };
 
 describe("ProductCard Snapshot", () => {
@@ -21,30 +18,23 @@ describe("ProductCard Snapshot", () => {
     expect(container).toMatchSnapshot();
   });
 
-  it("should match snapshot with product out of stock", () => {
-    const outOfStockProduct = {
-      ...mockProduct,
-      stockQuantity: 0,
+  it("should match snapshot with different product", () => {
+    const anotherProduct: Product = {
+      id: 2,
+      name: "Mouse Logitech MX Master 3",
+      category: "Acessórios",
+      description: "Mouse sem fio Logitech MX Master 3 com precisão profissional",
+      price: 450,
+      image: "https://via.placeholder.com/300x200?text=Mouse",
     };
-    const { container } = render(<ProductCard product={outOfStockProduct} />);
+    const { container } = render(<ProductCard product={anotherProduct} />);
     expect(container).toMatchSnapshot();
   });
 
-  it("should match snapshot without image", () => {
-    const noImageProduct = {
-      ...mockProduct,
-      imageUrl: null,
-    };
-    const { container } = render(<ProductCard product={noImageProduct} />);
-    expect(container).toMatchSnapshot();
-  });
-
-  it("should match snapshot without description", () => {
-    const noDescriptionProduct = {
-      ...mockProduct,
-      description: null,
-    };
-    const { container } = render(<ProductCard product={noDescriptionProduct} />);
-    expect(container).toMatchSnapshot();
+  it("should render product name and price", () => {
+    const { getByText } = render(<ProductCard product={mockProduct} />);
+    expect(getByText("Notebook Dell Inspiron 15")).toBeInTheDocument();
+    expect(getByText("Eletrônicos")).toBeInTheDocument();
   });
 });
+

@@ -11,6 +11,11 @@ const config = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    // Ignore jest config during build
+    tsconfigPath: './tsconfig.json',
+    ignoreBuildErrors: false,
+  },
 };
 
 export default config;

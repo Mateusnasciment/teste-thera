@@ -1,8 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import {
@@ -12,80 +8,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import type { FilterState } from "./products-page";
 
 interface ProductFiltersProps {
-  onSearchChange: (search: string) => void;
-  onMinPriceChange: (price: number | undefined) => void;
-  onMaxPriceChange: (price: number | undefined) => void;
-  onCategoryChange: (category: string | undefined) => void;
-  onSortChange: (sort: { sortBy: string; sortOrder: string }) => void;
+  filters: FilterState;
+  onFiltersChange: (filters: FilterState) => void;
   categories: string[];
-  isLoading?: boolean;
 }
 
 export function ProductFilters({
-  onSearchChange,
-  onMinPriceChange,
-  onMaxPriceChange,
-  onCategoryChange,
-  onSortChange,
+  filters,
+  onFiltersChange,
   categories,
-  isLoading = false,
 }: ProductFiltersProps) {
-  const [searchValue, setSearchValue] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [sortBy, setSortBy] = useState("createdAt");
-  const [sortOrder, setSortOrder] = useState("desc");
-
-  const handleSearch = (value: string) => {
-    setSearchValue(value);
-    onSearchChange(value);
+  const handleSearchChange = (value: string) => {
+    onFiltersChange({ ...filters, searchName: value });
   };
 
-  const handleMinPrice = (value: string) => {
-    setMinPrice(value);
-    onMinPriceChange(value ? parseFloat(value) : undefined);
+  const handleMinPriceChange = (value: string) => {
+    onFiltersChange({ ...filters, minPrice: value });
   };
 
-  const handleMaxPrice = (value: string) => {
-    setMaxPrice(value);
-    onMaxPriceChange(value ? parseFloat(value) : undefined);
+  const handleMaxPriceChange = (value: string) => {
+    onFiltersChange({ ...filters, maxPrice: value });
   };
 
-  const handleCategory = (value: string) => {
-    const newValue = value === "all" ? undefined : value;
-    setSelectedCategory(value);
-    onCategoryChange(newValue);
+  const handleCategoryChange = (value: string) => {
+    onFiltersChange({ ...filters, category: value === "all" ? "" : value });
   };
 
-  const handleSort = (value: string) => {
-    setSortBy(value);
-    onSortChange({ sortBy: value, sortOrder });
-  };
-
-  const handleSortOrder = (value: string) => {
-    setSortOrder(value);
-    onSortChange({ sortBy, sortOrder: value });
+  const handleSortChange = (value: string) => {
+    onFiltersChange({ 
+      ...filters, 
+      sortBy: value as FilterState["sortBy"] 
+    });
   };
 
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle>Filtros</CardTitle>
-        <CardDescription>Pesquise e filtre os produtos</CardDescription>
+        <CardTitle>Filtros e Ordenação</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           <div className="space-y-2">
             <Label htmlFor="search">Buscar por nome</Label>
             <Input
               id="search"
               placeholder="Nome do produto..."
-              value={searchValue}
-              onChange={(e) => handleSearch(e.target.value)}
-              disabled={isLoading}
+              value={filters.searchName}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
           </div>
 
@@ -95,10 +67,10 @@ export function ProductFilters({
               id="min-price"
               type="number"
               placeholder="0.00"
-              value={minPrice}
-              onChange={(e) => handleMinPrice(e.target.value)}
-              disabled={isLoading}
+              value={filters.minPrice}
+              onChange={(e) => handleMinPriceChange(e.target.value)}
               step="0.01"
+              min="0"
             />
           </div>
 
@@ -107,19 +79,22 @@ export function ProductFilters({
             <Input
               id="max-price"
               type="number"
-              placeholder="999.99"
-              value={maxPrice}
-              onChange={(e) => handleMaxPrice(e.target.value)}
-              disabled={isLoading}
+              placeholder="9999.99"
+              value={filters.maxPrice}
+              onChange={(e) => handleMaxPriceChange(e.target.value)}
               step="0.01"
+              min="0"
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="category">Categoria</Label>
-            <Select value={selectedCategory} onValueChange={handleCategory} disabled={isLoading}>
+            <Select 
+              value={filters.category || "all"} 
+              onValueChange={handleCategoryChange}
+            >
               <SelectTrigger id="category">
-                <SelectValue placeholder="Todas as categorias" />
+                <SelectValue placeholder="Todas" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas as categorias</SelectItem>
@@ -134,27 +109,18 @@ export function ProductFilters({
 
           <div className="space-y-2">
             <Label htmlFor="sort-by">Ordenar por</Label>
-            <Select value={sortBy} onValueChange={handleSort} disabled={isLoading}>
+            <Select 
+              value={filters.sortBy} 
+              onValueChange={handleSortChange}
+            >
               <SelectTrigger id="sort-by">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="createdAt">Mais recentes</SelectItem>
                 <SelectItem value="name">Nome (A-Z)</SelectItem>
-                <SelectItem value="price">Preço</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="sort-order">Ordem</Label>
-            <Select value={sortOrder} onValueChange={handleSortOrder} disabled={isLoading}>
-              <SelectTrigger id="sort-order">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="asc">Crescente</SelectItem>
-                <SelectItem value="desc">Decrescente</SelectItem>
+                <SelectItem value="price-asc">Menor Preço</SelectItem>
+                <SelectItem value="price-desc">Maior Preço</SelectItem>
+                <SelectItem value="category">Categoria</SelectItem>
               </SelectContent>
             </Select>
           </div>

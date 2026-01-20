@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+.gitignore
+.env
+.env.local
+.env.*.local
+.DS_Store
+*.md
+jest.config.js
+jest.setup.ts
+__tests__
+.jest-cache
+coverage
+.turbo
+dist
+.eslintcache
