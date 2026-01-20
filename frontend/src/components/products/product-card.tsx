@@ -13,8 +13,14 @@ export function ProductCard({ product }: ProductCardProps) {
           src={product.image}
           alt={product.name}
           className="h-full w-full object-cover"
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
           onError={(e) => {
-            e.currentTarget.src = `https://via.placeholder.com/300x200?text=${encodeURIComponent(product.name)}`;
+            // Evita loop infinito de onError -> set src -> onError
+            // Remove o handler e usa um fallback local estático
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "/img/fallback-product.svg";
           }}
         />
       </div>
