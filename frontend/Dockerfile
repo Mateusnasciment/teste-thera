@@ -3,9 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies
+# Install dependencies (including devDependencies)
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --include=dev
 
 # Copy source
 COPY . .

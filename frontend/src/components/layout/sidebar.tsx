@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Home, ListTodo, Users } from "lucide-react";
+import { LogOut, Home, ListTodo, Users, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "~/components/ui/button";
@@ -55,6 +55,16 @@ export function Sidebar({ userEmail }: SidebarProps) {
           >
             <Users className="mr-2 h-4 w-4" />
             Usuários
+          </Button>
+        </Link>
+
+        <Link href="/dashboard/products">
+          <Button
+            variant={isActive("/dashboard/products") ? "default" : "ghost"}
+            className="w-full justify-start"
+          >
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            Produtos
           </Button>
         </Link>
       </nav>

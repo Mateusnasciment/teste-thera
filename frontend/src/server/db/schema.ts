@@ -1,4 +1,4 @@
-import { index, pgTableCreator, varchar, timestamp, text, boolean } from "drizzle-orm/pg-core";
+import { index, pgTableCreator, varchar, timestamp, text, boolean, numeric, integer } from "drizzle-orm/pg-core";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -83,4 +83,27 @@ export const tasks = createTable(
     updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
   }),
   (t) => [index("userId_idx").on(t.userId), index("completed_idx").on(t.completed)],
+);
+
+export const products = createTable(
+  "product",
+  (d) => ({
+    id: d.varchar({ length: 256 }).primaryKey(),
+    name: d.varchar({ length: 255 }).notNull(),
+    category: d.varchar({ length: 128 }).notNull(),
+    description: d.text(),
+    price: d.numeric({ precision: 10, scale: 2 }).notNull(),
+    imageUrl: d.text(),
+    stockQuantity: d.integer().default(0).notNull(),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
+  }),
+  (t) => [
+    index("category_idx").on(t.category),
+    index("price_idx").on(t.price),
+    index("name_idx").on(t.name),
+  ],
 );
